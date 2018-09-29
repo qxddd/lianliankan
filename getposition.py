@@ -1,6 +1,7 @@
 #-*- coding:utf-8 -*-
 import cv2
 import time
+import findsolution
 # 获取图片哈希值
 def dHash(img):
     # 生成缩略图
@@ -76,12 +77,56 @@ def getposition(img):
                 position[i][j] = 8
     return position
 
+#寻找相同的动物位置
+def getthesame(position):
+    for i in range(1, 11):
+        for j in range(1, 8):
+            if position[i][j] != 0:
+                for x in range(1, 11):
+                    for y in range(1, 8):
+                        if x == i and y == j:
+                            continue
+                        elif position[i][j] == position[x][y]:
+                            point1 = [i, j]
+                            point2 = [x, y]
+                            yield point1, point2
+                        else:
+                            pass
+
+
 if __name__ == '__main__':
     start = time.time()
     img = cv2.imread(r"tmp/demo2.png")
     position = getposition(img)
+    answer = findsolution.findsolution(position)
+
+    for m, n in getthesame(position):
+        if answer.noturn(m, n):
+            answer.setzero(m, n)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.oneturn(a, s):
+            answer.setzero(a, s)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.oneturn(a, s):
+            answer.setzero(a, s)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.twoturn(a, s):
+            answer.setzero(a, s)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.twoturn(a, s):
+            answer.setzero(a, s)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.noturn(a, s):
+            answer.setzero(a, s)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.oneturn(a, s):
+            answer.setzero(a, s)
+    for a, s in getthesame(answer.returnposition()):
+        if answer.twoturn(a, s):
+            answer.setzero(a, s)
     for i in range(12):
-        print position[i]
+        print answer.returnposition()[i]
+
     end = time.time()
     print('Running time: %s Seconds' % (end - start))
 
